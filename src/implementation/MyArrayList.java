@@ -244,6 +244,24 @@ public class MyArrayList<E> implements ListADT<E> {
     }
 
     /**
+     * Returns the index of the first occurrence of the specified element in this list,
+     * or -1 if this list does not contain the element.
+     *
+     * @param element The element to search for.
+     * @return The index of the first occurrence of the specified element, or -1 if not found.
+     * @throws NullPointerException If the specified element is null.
+     */
+    public int indexOf(E element) {
+        if (element == null) throw new NullPointerException("Can't search for a null element inside the list.");
+        for (int i = 0; i < size; i++) {
+            if (array[i].equals(element)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Ensures that the array has enough space to store additional elements.
      * If the current limit is reached, it will double.
      */

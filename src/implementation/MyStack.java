@@ -1,102 +1,88 @@
 package implementation;
 
 import java.util.EmptyStackException;
-
 import utilities.Iterator;
 import utilities.StackADT;
 
-public class MyStack<E> implements StackADT<E>
-{
+public class MyStack<E> implements StackADT<E> {
+    private MyArrayList<E> list;
 
-	@Override
-	public void push(E toAdd) throws NullPointerException
-	{
-		// TODO Auto-generated method stub
-		
-	}
+    public MyStack() {
+        list = new MyArrayList<>();
+    }
 
-	@Override
-	public E pop() throws EmptyStackException
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void push(E toAdd) throws NullPointerException {
+        if (toAdd == null) throw new NullPointerException("Cannot add null element.");
+        list.add(toAdd);
+    }
 
-	@Override
-	public E peek() throws EmptyStackException
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public E pop() throws EmptyStackException {
+        if (isEmpty()) throw new EmptyStackException();
+        return list.remove(list.size() - 1);
+    }
 
-	@Override
-	public void clear()
-	{
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public E peek() throws EmptyStackException {
+        if (isEmpty()) throw new EmptyStackException();
+        return list.get(list.size() - 1);
+    }
 
-	@Override
-	public boolean isEmpty()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public void clear() {
+        list.clear();
+    }
 
-	@Override
-	public Object[] toArray()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
 
-	@Override
-	public E[] toArray(E[] holder) throws NullPointerException
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Object[] toArray() {
+        return list.toArray();
+    }
 
-	@Override
-	public boolean contains(E toFind) throws NullPointerException
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public E[] toArray(E[] holder) throws NullPointerException {
+        return list.toArray(holder);
+    }
 
-	@Override
-	public int search(E toFind)
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    @Override
+    public boolean contains(E toFind) throws NullPointerException {
+        return list.contains(toFind);
+    }
 
-	@Override
-	public Iterator<E> iterator()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public int search(E toFind) {
+        int index = list.indexOf(toFind);
+        return index == -1 ? -1 : list.size() - index;
+    }
 
-	@Override
-	public boolean equals(StackADT<E> that)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public Iterator<E> iterator() {
+        return list.iterator();
+    }
 
-	@Override
-	public int size()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    @Override
+    public boolean equals(StackADT<E> that) {
+        if (that == null || this.size() != that.size()) return false;
+        Iterator<E> thisIterator = this.iterator();
+        Iterator<E> thatIterator = that.iterator();
+        while (thisIterator.hasNext()) {
+            if (!thisIterator.next().equals(thatIterator.next())) return false;
+        }
+        return true;
+    }
 
-	@Override
-	public boolean stackOverflow()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public int size() {
+        return list.size();
+    }
 
+    @Override
+    public boolean stackOverflow() {
+        return false;
+    }
 }
