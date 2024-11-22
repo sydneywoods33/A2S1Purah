@@ -12,13 +12,20 @@ public class Driver
 		// parse files
 		for (String arg : args)
 		{
-			MyQueue<String> ErrorsFound = MyParser.ParseXML(arg);
-			if (ErrorsFound.isEmpty())
+			try
 			{
-				System.out.println("No error found.");
-			} else
+				System.out.println(" =========== ERROR LOG =========== ");
+				MyQueue<String> ErrorsFound = MyParser.ParseXML(arg);
+				if (ErrorsFound.isEmpty())
+				{
+					System.out.println("No error found.");
+				} else
+				{
+					System.out.println(ErrorsFound.toString());
+				}
+			} catch (Exception e)
 			{
-				System.out.println(ErrorsFound.toString());
+				System.out.println("Something went wrong with the file.");
 			}
 		}
 	}

@@ -11,7 +11,7 @@ public class Parser
 		super();
 	}
 
-	public MyQueue<String> ParseXML(String fileName)
+	public MyQueue<String> ParseXML(String fileName) throws Exception
 	{
 		// parts of an XML tag
 		String Self_Closing = "/>"; // < tag />
@@ -25,86 +25,80 @@ public class Parser
 		MyQueue<String> extrasQ = new MyQueue<>();
 
 		// start parser
-		try
+		// scan file
+		File inputFile = new File(fileName);
+		Scanner myReader = new Scanner(inputFile);
+
+		// read line
+		while (myReader.hasNextLine())
 		{
-			// scan file
-			File inputFile = new File(fileName);
-			Scanner myReader = new Scanner(inputFile);
-
-			// read line
-			while (myReader.hasNextLine())
+			String data = myReader.nextLine();
+			// is line self closing
+			if (data.startsWith(Start_Tag) && data.endsWith(Self_Closing))
 			{
-				String data = myReader.nextLine();
-				// is line self closing
-				if (data.startsWith(Start_Tag) && data.endsWith(Self_Closing))
-				{
-					continue;
-					// is line a start tag
-				} else if (data.startsWith(Start_Tag) && data.endsWith(Close_Tag))
-				{
-					myParser.push(data);
-					// is line an end tag
-				} else if (data.startsWith(End_Tag))
-				{
-					// if the line matches the top of the stack
-					if (data == myParser.peek())
-					{
-						myParser.pop();
-						// if line matches error queue
-					} else if (data == errorQ.peek())
-					{
-						errorQ.dequeue();
-						// if stack is empty
-					} else if (myParser.peek() == null)
-					{
-						errorQ.enqueue(data);
 
+				// is line a start tag
+			} else if (data.startsWith(Start_Tag) && data.endsWith(Close_Tag))
+			{
+				myParser.push(data);
+				// is line an end tag
+			} else if (data.startsWith(End_Tag))
+			{
+				// if the line matches the top of the stack
+				if (data == myParser.peek())
+				{
+					myParser.pop();
+					// if line matches error queue
+				} else if (data == errorQ.peek())
+				{
+					errorQ.dequeue();
+					// if stack is empty
+				} else if (myParser.peek() == null)
+				{
+					errorQ.enqueue(data);
+
+				} else
+				{
+					// check if matching tag in stack
+					if (myParser.contains(data.replace("/", "")))
+					{
+						while (myParser.contains(data))
+						{
+							errorQ.enqueue(myParser.pop());
+						}
+						throw new Exception("Improper tag construction.");
 					} else
 					{
-						// check if matching tag in stack
-						if (myParser.contains(data.replace("/", "")))
-						{
-							while (myParser.contains(data))
-							{
-								errorQ.enqueue(myParser.pop());
-							}
-							throw new Exception("Improper tag construction.");
-						} else
-						{
-							extrasQ.enqueue(data);
-						}
+						extrasQ.enqueue(data);
 					}
 				}
 			}
-			// check stack
-			while (!myParser.isEmpty())
-			{
-				errorQ.enqueue(myParser.pop());
-			}
-			// if one, but not both, queues are empty
-			while (errorQ.isEmpty() ^ extrasQ.isEmpty())
-			{
-				throw new Exception("Queue length is uneven.");
-			}
-			// both queues are not empty
-			while (!(errorQ.isEmpty() && extrasQ.isEmpty()))
-			{
-				if (errorQ.peek() == extrasQ.peek())
-				{
-					errorQ.dequeue();
-					extrasQ.dequeue();
-				} else
-				{
-					errorQ.dequeue();
-					throw new Exception("Queues do not match.");
-				}
-			}
-			
-			myReader.close();
-		} catch (Exception e)
-		{
-			System.out.println("Something went wrong with the file.");
 		}
+		// check stack
+		while (!myParser.isEmpty())
+		{
+			errorQ.enqueue(myParser.pop());
+		}
+		// if one, but not both, queues are empty
+		while (errorQ.isEmpty() ^ extrasQ.isEmpty())
+		{
+			throw new Exception("Queue length is uneven.");
+		}
+		// both queues are not empty
+		while (!(errorQ.isEmpty() && extrasQ.isEmpty()))
+		{
+			if (errorQ.peek() == extrasQ.peek())
+			{
+				errorQ.dequeue();
+				extrasQ.dequeue();
+			} else
+			{
+				errorQ.dequeue();
+				throw new Exception("Queues do not match.");
+			}
+		}
+
+		myReader.close();
 
 		return errorQ;
 	}
