@@ -7,18 +7,28 @@ public class Driver
 {
 	public static void main(String[] args)
 	{
+		// setup
+		String fileName = null;
+		 // Parse command line arguments
+        for (String arg : args) {
+            if (arg.startsWith("-f")) {
+                fileName = arg.substring(2);}
+                
 		// call parser
 		Parser MyParser = new Parser();
-		// parse files
-		for (String arg : args)
-		{
+
 			try
 			{
-				System.out.println(" =========== ERROR LOG =========== ");
-				MyQueue<String> ErrorsFound = MyParser.ParseXML(arg);
+				// create header
+				System.out.println("\nParsing " + fileName + " for errors.\n");
+
+				System.out.println(" ================ ERROR LOG ================ \n");
+
+				// run the parser on the supplied file
+				MyQueue<String> ErrorsFound = MyParser.ParseXML(fileName);
 				if (ErrorsFound.isEmpty())
 				{
-					System.out.println("No error found.");
+					System.out.println("No errors found.\n");
 				} else
 				{
 					while (!ErrorsFound.isEmpty())
@@ -33,5 +43,4 @@ public class Driver
 			}
 		}
 	}
-
 }
