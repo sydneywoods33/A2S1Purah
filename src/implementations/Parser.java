@@ -1,11 +1,17 @@
-package implementation;
+package implementations;
 
 import java.io.File;
 import java.util.Scanner;
 
 public class Parser
 {
-	public void ParseXML(String fileName)
+
+	public Parser()
+	{
+		super();
+	}
+
+	public MyQueue<String> ParseXML(String fileName)
 	{
 		// parts of an XML tag
 		String Self_Closing = "/>"; // < tag />
@@ -32,7 +38,7 @@ public class Parser
 				// is line self closing
 				if (data.startsWith(Start_Tag) && data.endsWith(Self_Closing))
 				{
-					break;
+					continue;
 					// is line a start tag
 				} else if (data.startsWith(Start_Tag) && data.endsWith(Close_Tag))
 				{
@@ -56,14 +62,13 @@ public class Parser
 					} else
 					{
 						// check if matching tag in stack
-						if (myParser.contains(data))
+						if (myParser.contains(data.replace("/", "")))
 						{
 							while (myParser.contains(data))
 							{
 								errorQ.enqueue(myParser.pop());
-
 							}
-							throw new Exception("Improper tag contrustion.");
+							throw new Exception("Improper tag construction.");
 						} else
 						{
 							extrasQ.enqueue(data);
@@ -71,39 +76,37 @@ public class Parser
 					}
 				}
 			}
-			// check queues
+			// check stack
+			while (!myParser.isEmpty())
+			{
+				errorQ.enqueue(myParser.pop());
+			}
+			// if one, but not both, queues are empty
+			while (errorQ.isEmpty() ^ extrasQ.isEmpty())
+			{
+				throw new Exception("Queue length is uneven.");
+			}
+			// both queues are not empty
 			while (!(errorQ.isEmpty() && extrasQ.isEmpty()))
 			{
-				// check stack
-				if (!myParser.isEmpty())
+				if (errorQ.peek() == extrasQ.peek())
 				{
-					while (!myParser.isEmpty())
-					{
-						errorQ.enqueue(myParser.pop());
-					}
-				}
-				// if one, but not both, queues are empty
-				else if (errorQ.isEmpty() ^ extrasQ.isEmpty())
+					errorQ.dequeue();
+					extrasQ.dequeue();
+				} else
 				{
-					throw new Exception("Queue length is uneven.");
-				}
-				// both queues are not empty
-				else if (!(errorQ.isEmpty() && extrasQ.isEmpty()))
-				{
-					if (errorQ.peek() == extrasQ.peek())
-					{
-						errorQ.dequeue();
-						extrasQ.dequeue();
-					} else
-					{
-						errorQ.dequeue();
-						throw new Exception("Queues do not match.");
-					}
+					errorQ.dequeue();
+					throw new Exception("Queues do not match.");
 				}
 			}
+			
+			myReader.close();
 		} catch (Exception e)
 		{
 			System.out.println("Something went wrong with the file.");
 		}
+
+		return errorQ;
 	}
+
 }

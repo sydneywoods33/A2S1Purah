@@ -1,9 +1,10 @@
-package implementation;
+package implementations;
 
 import java.util.EmptyStackException;
 import utilities.Iterator;
 import utilities.StackADT;
 
+@SuppressWarnings("serial")
 public class MyStack<E> implements StackADT<E> {
     private MyArrayList<E> list;
 

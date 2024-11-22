@@ -1,4 +1,4 @@
-package implementation;
+package implementations;
 
 public class MyDLLNode<E> {
     E data;

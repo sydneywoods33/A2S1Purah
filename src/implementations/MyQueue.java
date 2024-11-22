@@ -1,9 +1,10 @@
-package implementation;
+package implementations;
 
 import exceptions.EmptyQueueException;
 import utilities.Iterator;
 import utilities.QueueADT;
 
+@SuppressWarnings("serial")
 public class MyQueue<E> implements QueueADT<E> {
     private MyDLL<E> list;
 
