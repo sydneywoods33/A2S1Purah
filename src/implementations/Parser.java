@@ -1,7 +1,10 @@
 package implementations;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
+
+import exceptions.EmptyQueueException;
 
 public class Parser
 {
@@ -11,7 +14,7 @@ public class Parser
 		super();
 	}
 
-	public MyQueue<String> ParseXML(String fileName) throws Exception
+	public MyQueue<String> ParseXML(String fileName) throws EmptyQueueException, FileNotFoundException
 	{
 		// parts of an XML tag
 		String Self_Closing = "/>"; // < tag />
@@ -23,6 +26,7 @@ public class Parser
 		MyStack<String> myParser = new MyStack<>();
 		MyQueue<String> errorQ = new MyQueue<>();
 		MyQueue<String> extrasQ = new MyQueue<>();
+		int counter = 0;
 
 		// start parser
 		// scan file
@@ -32,6 +36,7 @@ public class Parser
 		// read line
 		while (myReader.hasNextLine())
 		{
+			counter++;
 			String data = myReader.nextLine();
 			// is line self closing
 			if (data.startsWith(Start_Tag) && data.endsWith(Self_Closing))
@@ -66,7 +71,7 @@ public class Parser
 						{
 							errorQ.enqueue(myParser.pop());
 						}
-						throw new Exception("Improper tag construction.");
+						errorQ.enqueue("Error: line " + counter + " - Improper tag construction.");
 					} else
 					{
 						extrasQ.enqueue(data);
@@ -74,6 +79,9 @@ public class Parser
 				}
 			}
 		}
+		
+		myReader.close();
+		
 		// check stack
 		while (!myParser.isEmpty())
 		{
@@ -82,7 +90,7 @@ public class Parser
 		// if one, but not both, queues are empty
 		while (errorQ.isEmpty() ^ extrasQ.isEmpty())
 		{
-			throw new Exception("Queue length is uneven.");
+			errorQ.enqueue("Error: line " + counter + " - Queue length is uneven.");
 		}
 		// both queues are not empty
 		while (!(errorQ.isEmpty() && extrasQ.isEmpty()))
@@ -94,11 +102,9 @@ public class Parser
 			} else
 			{
 				errorQ.dequeue();
-				throw new Exception("Queues do not match.");
+				errorQ.enqueue("Error: line " + counter + " - Queues do not match.");
 			}
 		}
-
-		myReader.close();
 
 		return errorQ;
 	}

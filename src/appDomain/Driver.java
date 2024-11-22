@@ -21,7 +21,11 @@ public class Driver
 					System.out.println("No error found.");
 				} else
 				{
-					System.out.println(ErrorsFound.toString());
+					while (!ErrorsFound.isEmpty())
+					{
+						System.out.println(ErrorsFound.peek());
+						ErrorsFound.dequeue();
+					}
 				}
 			} catch (Exception e)
 			{
